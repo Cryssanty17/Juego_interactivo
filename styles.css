@@ -9,8 +9,24 @@ body {
 
 #contador {
   font-size: 1.2em;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   color: #00ff99;
+}
+
+#reiniciarBtn {
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #ff5050;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#reiniciarBtn:hover {
+  background-color: #ff1a1a;
 }
 
 .game-board {

@@ -21,84 +21,99 @@ const pairs = [
   { id: 'eg', pais: 'Egipto', capital: 'El Cairo' },
 ];
 
-let cards = [];
-
-pairs.forEach(pair => {
-  cards.push({ id: pair.id, content: pair.pais });
-  cards.push({ id: pair.id, content: pair.capital });
-});
-
-cards = shuffle(cards);
-
 const board = document.getElementById("gameBoard");
 const contadorElement = document.getElementById("contador");
 const mensajeFinal = document.getElementById("mensajeFinal");
+const reiniciarBtn = document.getElementById("reiniciarBtn");
 
+let movimientos = 0;
+let aciertos = 0;
 let firstCard = null;
 let secondCard = null;
 let lockBoard = false;
-let movimientos = 0;
-let aciertos = 0;
 
-cards.forEach(data => {
-  const card = document.createElement("div");
-  card.classList.add("card");
-  card.dataset.id = data.id;
+function iniciarJuego() {
+  board.innerHTML = "";
+  mensajeFinal.classList.add("mensaje-oculto");
+  movimientos = 0;
+  aciertos = 0;
+  firstCard = null;
+  secondCard = null;
+  lockBoard = false;
+  contadorElement.textContent = "Movimientos: 0";
 
-  const cardInner = document.createElement("div");
-  cardInner.classList.add("card-inner");
+  let cards = [];
+  pairs.forEach(pair => {
+    cards.push({ id: pair.id, content: pair.pais });
+    cards.push({ id: pair.id, content: pair.capital });
+  });
 
-  const front = document.createElement("div");
-  front.classList.add("card-front");
-  front.textContent = "?";
+  cards = shuffle(cards);
 
-  const back = document.createElement("div");
-  back.classList.add("card-back");
-  back.textContent = data.content;
+  cards.forEach(data => {
+    const card = document.createElement("div");
+    card.classList.add("card");
+    card.dataset.id = data.id;
 
-  cardInner.appendChild(front);
-  cardInner.appendChild(back);
-  card.appendChild(cardInner);
-  board.appendChild(card);
+    const cardInner = document.createElement("div");
+    cardInner.classList.add("card-inner");
 
-  card.addEventListener("click", () => {
-    if (lockBoard || card.classList.contains("flipped")) return;
+    const front = document.createElement("div");
+    front.classList.add("card-front");
+    front.textContent = "?";
 
-    card.classList.add("flipped");
+    const back = document.createElement("div");
+    back.classList.add("card-back");
+    back.textContent = data.content;
 
-    if (!firstCard) {
-      firstCard = card;
-    } else {
-      secondCard = card;
-      lockBoard = true;
-      movimientos++;
-      contadorElement.textContent = `Movimientos: ${movimientos}`;
+    cardInner.appendChild(front);
+    cardInner.appendChild(back);
+    card.appendChild(cardInner);
+    board.appendChild(card);
 
-      const id1 = firstCard.dataset.id;
-      const id2 = secondCard.dataset.id;
+    card.addEventListener("click", () => {
+      if (lockBoard || card.classList.contains("flipped")) return;
 
-      if (id1 === id2) {
-        aciertos++;
-        firstCard = null;
-        secondCard = null;
-        lockBoard = false;
+      card.classList.add("flipped");
 
-        if (aciertos === pairs.length) {
-          mensajeFinal.classList.remove("mensaje-oculto");
-        }
+      if (!firstCard) {
+        firstCard = card;
       } else {
-        setTimeout(() => {
-          firstCard.classList.remove("flipped");
-          secondCard.classList.remove("flipped");
+        secondCard = card;
+        lockBoard = true;
+        movimientos++;
+        contadorElement.textContent = `Movimientos: ${movimientos}`;
+
+        const id1 = firstCard.dataset.id;
+        const id2 = secondCard.dataset.id;
+
+        if (id1 === id2) {
+          aciertos++;
           firstCard = null;
           secondCard = null;
           lockBoard = false;
-        }, 1000);
+
+          if (aciertos === pairs.length) {
+            mensajeFinal.classList.remove("mensaje-oculto");
+          }
+        } else {
+          setTimeout(() => {
+            firstCard.classList.remove("flipped");
+            secondCard.classList.remove("flipped");
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+          }, 1000);
+        }
       }
-    }
+    });
   });
-});
+}
+
+reiniciarBtn.addEventListener("click", iniciarJuego);
 
 function shuffle(arr) {
   return arr.sort(() => Math.random() - 0.5);
 }
+
+iniciarJuego();
