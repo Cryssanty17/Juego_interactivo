@@ -26,6 +26,10 @@ const contadorElement = document.getElementById("contador");
 const mensajeFinal = document.getElementById("mensajeFinal");
 const reiniciarBtn = document.getElementById("reiniciarBtn");
 
+const audioCorrecto = document.getElementById("audioCorrecto");
+const audioIncorrecto = document.getElementById("audioIncorrecto");
+const audioVictoria = document.getElementById("audioVictoria");
+
 let movimientos = 0;
 let aciertos = 0;
 let firstCard = null;
@@ -89,14 +93,17 @@ function iniciarJuego() {
 
         if (id1 === id2) {
           aciertos++;
+          audioCorrecto.play();
           firstCard = null;
           secondCard = null;
           lockBoard = false;
 
           if (aciertos === pairs.length) {
             mensajeFinal.classList.remove("mensaje-oculto");
+            audioVictoria.play();
           }
         } else {
+          audioIncorrecto.play();
           setTimeout(() => {
             firstCard.classList.remove("flipped");
             secondCard.classList.remove("flipped");
