@@ -25,6 +25,7 @@ const board = document.getElementById("gameBoard");
 const contadorElement = document.getElementById("contador");
 const mensajeFinal = document.getElementById("mensajeFinal");
 const reiniciarBtn = document.getElementById("reiniciarBtn");
+const timerElement = document.getElementById("timer");
 
 const audioCorrecto = document.getElementById("audioCorrecto");
 const audioIncorrecto = document.getElementById("audioIncorrecto");
@@ -36,15 +37,40 @@ let firstCard = null;
 let secondCard = null;
 let lockBoard = false;
 
+let tiempoLimite = 120; 
+let tiempoRestante = tiempoLimite;
+let temporizador;
+
+function iniciarTemporizador() {
+  clearInterval(temporizador);
+  tiempoRestante = tiempoLimite;
+  timerElement.textContent = `Tiempo: ${tiempoRestante}s`;
+
+  temporizador = setInterval(() => {
+    tiempoRestante--;
+    timerElement.textContent = `Tiempo: ${tiempoRestante}s`;
+
+    if (tiempoRestante <= 0) {
+      clearInterval(temporizador);
+      lockBoard = true;
+      mensajeFinal.textContent = "⏰ ¡Tiempo agotado!";
+      mensajeFinal.classList.remove("mensaje-oculto");
+    }
+  }, 1000);
+}
+
 function iniciarJuego() {
   board.innerHTML = "";
   mensajeFinal.classList.add("mensaje-oculto");
+  mensajeFinal.textContent = "🎉 ¡Has ganado!";
   movimientos = 0;
   aciertos = 0;
   firstCard = null;
   secondCard = null;
   lockBoard = false;
   contadorElement.textContent = "Movimientos: 0";
+
+  iniciarTemporizador();
 
   let cards = [];
   pairs.forEach(pair => {
@@ -99,6 +125,7 @@ function iniciarJuego() {
           lockBoard = false;
 
           if (aciertos === pairs.length) {
+            clearInterval(temporizador);
             mensajeFinal.classList.remove("mensaje-oculto");
             audioVictoria.play();
           }
