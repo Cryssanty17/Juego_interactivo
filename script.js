@@ -26,6 +26,7 @@ const contadorElement = document.getElementById("contador");
 const mensajeFinal = document.getElementById("mensajeFinal");
 const reiniciarBtn = document.getElementById("reiniciarBtn");
 const timerElement = document.getElementById("timer");
+const dificultadSelect = document.getElementById("dificultad");
 
 const audioCorrecto = document.getElementById("audioCorrecto");
 const audioIncorrecto = document.getElementById("audioIncorrecto");
@@ -37,13 +38,12 @@ let firstCard = null;
 let secondCard = null;
 let lockBoard = false;
 
-let tiempoLimite = 120; 
-let tiempoRestante = tiempoLimite;
+let tiempoRestante = 0;
 let temporizador;
+let cantidadPares = 0;
 
 function iniciarTemporizador() {
   clearInterval(temporizador);
-  tiempoRestante = tiempoLimite;
   timerElement.textContent = `Tiempo: ${tiempoRestante}s`;
 
   temporizador = setInterval(() => {
@@ -70,10 +70,25 @@ function iniciarJuego() {
   lockBoard = false;
   contadorElement.textContent = "Movimientos: 0";
 
+  // Ajustar dificultad
+  const dificultad = dificultadSelect.value;
+  if (dificultad === "facil") {
+    cantidadPares = 5;
+    tiempoRestante = 60;
+  } else if (dificultad === "medio") {
+    cantidadPares = 10;
+    tiempoRestante = 90;
+  } else {
+    cantidadPares = 20;
+    tiempoRestante = 120;
+  }
+
   iniciarTemporizador();
 
+  const seleccionados = shuffle([...pairs]).slice(0, cantidadPares);
+
   let cards = [];
-  pairs.forEach(pair => {
+  seleccionados.forEach(pair => {
     cards.push({ id: pair.id, content: pair.pais });
     cards.push({ id: pair.id, content: pair.capital });
   });
@@ -124,7 +139,7 @@ function iniciarJuego() {
           secondCard = null;
           lockBoard = false;
 
-          if (aciertos === pairs.length) {
+          if (aciertos === cantidadPares) {
             clearInterval(temporizador);
             mensajeFinal.classList.remove("mensaje-oculto");
             audioVictoria.play();
@@ -144,10 +159,15 @@ function iniciarJuego() {
   });
 }
 
-reiniciarBtn.addEventListener("click", iniciarJuego);
-
+// Barajar arreglo
 function shuffle(arr) {
   return arr.sort(() => Math.random() - 0.5);
 }
 
+// Iniciar al hacer clic en botón o al cargar
+reiniciarBtn.addEventListener("click", iniciarJuego);
+dificultadSelect.addEventListener("change", iniciarJuego);
+
+// Iniciar automáticamente con la dificultad por defecto
 iniciarJuego();
+
